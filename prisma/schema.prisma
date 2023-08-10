@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Tienda {
+  store_id     Int        @id @default(autoincrement())
+  store_name   String     @unique
+  num_store    String
+  email_store  String
+  calle_store  String
+  ciudad_store String
+  estado_store String
+  cp_store     String
+  managers     Manager[]
+  stocks       Stock[]
+  facturas     Factura[]
+  Personal     Personal[]
+}
+
+model Manager {
+  manager_id      Int        @id @default(autoincrement())
+  nom_manager     String     @unique
+  num_manager     String
+  email_manager   String
+  estatus_manager Boolean
+  store_id1       Int
+  tienda          Tienda     @relation(fields: [store_id1], references: [store_id])
+  personal        Personal[]
+}
+
+model Personal {
+  personal_id      Int       @id @default(autoincrement())
+  nom_personal     String
+  ape_personal     String
+  tel_personal     String
+  email_personal   String
+  estatus_personal Boolean
+  store_id2        Int
+  manager_id1      Int
+  facturas         Factura[]
+  tienda           Tienda    @relation(fields: [store_id2], references: [store_id])
+  manager          Manager   @relation(fields: [manager_id1], references: [manager_id])
+}
+
+model Marca {
+  brand_id   Int        @id @default(autoincrement())
+  brand_name String
+  productos  Producto[]
+}
+
+model Categoria {
+  category_id   Int        @id @default(autoincrement())
+  category_name String
+  productos     Producto[]
+}
+
+model Producto {
+  product_id    Int           @id @default(autoincrement())
+  product_name  String
+  desc_product  String
+  brand_id1     Int
+  category_id1  Int
+  precio_compra Float
+  precio_vta    Float
+  marca         Marca         @relation(fields: [brand_id1], references: [brand_id])
+  categoria     Categoria     @relation(fields: [category_id1], references: [category_id])
+  stocks        Stock[]
+  ordenes_venta Orden_Venta[]
+}
+
+model Stock {
+  stock_id    Int @id @default(autoincrement())
+  store_id3   Int
+  product_id1 Int
+
+  cantidad_stock Int?
+  tienda         Tienda   @relation(fields: [store_id3], references: [store_id])
+  producto       Producto @relation(fields: [product_id1], references: [product_id])
+}
+
+model Cliente {
+  id_cli     Int       @id @default(autoincrement())
+  nom_cli    String
+  ape_clie   String
+  tel_cli    String
+  email_cli  String
+  calle_cli  String
+  ciudad_cli String
+  estado_cli String
+  cp_cli     String
+  facturas   Factura[]
+}
+
+model Factura {
+  factura_id    Int           @id @default(autoincrement())
+  id_cli1       Int
+  status_orden  String
+  fecha_orden   DateTime
+  store_id4     Int
+  personal_id1  Int
+  cliente       Cliente       @relation(fields: [id_cli1], references: [id_cli])
+  tienda        Tienda        @relation(fields: [store_id4], references: [store_id])
+  personal      Personal      @relation(fields: [personal_id1], references: [personal_id])
+  ordenes_venta Orden_Venta[]
+}
+
+model Orden_Venta {
+  orden_id          Int      @id @default(autoincrement())
+  product_id2       Int
+  cantidad_orden    Int
+  descuento_vta     Int
+  producto          Producto @relation(fields: [product_id2], references: [product_id])
+  Factura           Factura? @relation(fields: [facturaFactura_id], references: [factura_id])
+  facturaFactura_id Int?
+}
+
+model Proveedor {
+  id_prov      Int     @id @default(autoincrement())
+  nom_prov     String  @unique
+  email_prov   String
+  calle_prov   String
+  ciudad_prov  String
+  estado_prov  String
+  cp_prov      String
+  estatus_prov Boolean
+}
+
+// schema.prisma
+
